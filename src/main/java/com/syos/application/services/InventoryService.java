@@ -222,9 +222,18 @@ public class InventoryService {
         int expiringCount = getExpiringItems().size();
         BigDecimal totalValue = getTotalInventoryValue();
 
+        // ADDED: Calculate the missing fields
+        int inStoreCount = (int) allItems.stream()
+                .filter(item -> "IN_STORE".equals(item.getState().getStateName()))
+                .count();
+        int onShelfCount = (int) allItems.stream()
+                .filter(item -> "ON_SHELF".equals(item.getState().getStateName()))
+                .count();
+
         return new InventoryStatistics(
                 totalItems, totalQuantity, expiredCount,
-                lowStockCount, expiringCount, totalValue
+                lowStockCount, expiringCount, totalValue,
+                inStoreCount, onShelfCount
         );
     }
 
@@ -239,15 +248,22 @@ public class InventoryService {
         public final int expiringCount;
         public final BigDecimal totalValue;
 
+        // ADDED: Missing fields that were causing compilation errors
+        public final int inStoreCount;
+        public final int onShelfCount;
+
         public InventoryStatistics(int totalItems, int totalQuantity,
                                    int expiredCount, int lowStockCount,
-                                   int expiringCount, BigDecimal totalValue) {
+                                   int expiringCount, BigDecimal totalValue,
+                                   int inStoreCount, int onShelfCount) { // UPDATED: Added new parameters
             this.totalItems = totalItems;
             this.totalQuantity = totalQuantity;
             this.expiredCount = expiredCount;
             this.lowStockCount = lowStockCount;
             this.expiringCount = expiringCount;
             this.totalValue = totalValue;
+            this.inStoreCount = inStoreCount;
+            this.onShelfCount = onShelfCount;
         }
     }
 }

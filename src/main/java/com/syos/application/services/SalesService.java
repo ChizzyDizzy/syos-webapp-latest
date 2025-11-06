@@ -114,6 +114,7 @@ public class SalesService {
     public class SaleBuilder {
         private final List<BillItem> items = new ArrayList<>();
         private Money subtotal = new Money(BigDecimal.ZERO);
+        private BigDecimal discount = BigDecimal.ZERO; // ADDED: Discount field
 
         /**
          * Add an item to the current sale
@@ -173,6 +174,14 @@ public class SalesService {
         }
 
         /**
+         * ADDED: Apply discount to the sale
+         */
+        public SaleBuilder applyDiscount(BigDecimal discount) {
+            this.discount = discount;
+            return this;
+        }
+
+        /**
          * Complete the sale and create a bill
          * @param cashTendered The amount of cash provided by customer
          * @return The completed bill
@@ -184,15 +193,18 @@ public class SalesService {
                 throw new EmptySaleException("Cannot complete sale with no items");
             }
 
-            if (cashTendered.compareTo(subtotal.getValue()) < 0) {
-                throw new IllegalArgumentException("Insufficient cash. Required: " + subtotal + ", Tendered: " + cashTendered);
+            // Calculate total after discount
+            Money totalAfterDiscount = subtotal.subtract(new Money(discount));
+
+            if (cashTendered.compareTo(totalAfterDiscount.getValue()) < 0) {
+                throw new IllegalArgumentException("Insufficient cash. Required: " + totalAfterDiscount + ", Tendered: " + cashTendered);
             }
 
             // Create the bill with all items
             Bill.Builder billBuilder = new Bill.Builder()
                     .withBillNumber(generateBillNumber())
                     .withDate(LocalDateTime.now())
-                    .withDiscount(BigDecimal.ZERO)
+                    .withDiscount(discount)
                     .withCashTendered(cashTendered)
                     .withTransactionType(TransactionType.IN_STORE);
 
@@ -217,11 +229,22 @@ public class SalesService {
         }
 
         /**
+         * ADDED: Complete online sale with only cash tendered (overloaded version)
+         */
+        public Bill completeOnlineSale(BigDecimal cashTendered) {
+            // Default values for online sale
+            String customerEmail = "customer@example.com";
+            String deliveryAddress = "Default Delivery Address";
+            return completeOnlineSale(cashTendered, customerEmail, deliveryAddress);
+        }
+
+        /**
          * Clear all items from the current sale
          */
         public void clearSale() {
             items.clear();
             subtotal = new Money(BigDecimal.ZERO);
+            discount = BigDecimal.ZERO;
         }
 
         /**

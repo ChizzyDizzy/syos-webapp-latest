@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYOS POS System - Login</title>
+    <!-- Remove WEB-INF from CSS path -->
+    <style>
+        /* Embedded CSS to avoid path issues */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary {
+            background-color: #667eea;
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: #5a6fd8;
+        }
+
+        .btn-primary:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            margin: 5px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .alert {
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .login-footer {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .credentials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .credential-card {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+
+        .system-info, .tech-info {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .system-info ul, .tech-info ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        .quick-buttons {
+            text-align: center;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="login-container">
+        <div class="login-header">
+            <h1>🏪 SYOS POS System</h1>
+            <p class="subtitle">Point of Sale & Inventory Management</p>
+        </div>
+
+        <div id="alert-container"></div>
+
+        <form id="login-form" class="login-form">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        required
+                        autocomplete="username"
+                        placeholder="Enter your username"
+                        autofocus
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        required
+                        autocomplete="current-password"
+                        placeholder="Enter your password"
+                >
+            </div>
+
+            <button type="submit" class="btn btn-primary" id="login-btn">
+                <span id="login-text">Login</span>
+                <span id="login-spinner" class="spinner" style="display: none;"></span>
+            </button>
+        </form>
+
+        <div class="login-footer">
+            <h3>Test Credentials:</h3>
+            <div class="credentials-grid">
+                <div class="credential-card">
+                    <strong>Admin</strong>
+                    <p>Username: admin</p>
+                    <p>Password: admin123</p>
+                </div>
+                <div class="credential-card">
+                    <strong>Manager</strong>
+                    <p>Username: manager</p>
+                    <p>Password: manager123</p>
+                </div>
+                <div class="credential-card">
+                    <strong>Cashier</strong>
+                    <p>Username: cashier</p>
+                    <p>Password: cashier123</p>
+                </div>
+            </div>
+
+            <div class="quick-buttons">
+                <p>Quick Fill:</p>
+                <button onclick="fillCredentials('admin')" class="btn-small">Admin</button>
+                <button onclick="fillCredentials('manager')" class="btn-small">Manager</button>
+                <button onclick="fillCredentials('cashier')" class="btn-small">Cashier</button>
+            </div>
+        </div>
+
+        <div class="system-info">
+            <p><strong>System Features:</strong></p>
+            <ul>
+                <li>✓ Sales Management & Bill Processing</li>
+                <li>✓ Inventory Control & Stock Management</li>
+                <li>✓ Comprehensive Sales Reporting</li>
+                <li>✓ Role-Based Access Control</li>
+                <li>✓ Real-time Stock Updates</li>
+            </ul>
+        </div>
+
+        <div class="tech-info">
+            <p><strong>Status:</strong></p>
+            <ul>
+                <li id="db-status">❌ Database: Checking...</li>
+                <li id="api-status">❌ API: Checking...</li>
+                <li id="filter-status">❌ Filters: Checking...</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Enhanced login functionality with better error handling
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check system status
+        checkSystemStatus();
+
+        // Check if already logged in
+        const token = sessionStorage.getItem('authToken');
+        const userData = sessionStorage.getItem('user');
+
+        if (token && userData) {
+            try {
+                const user = JSON.parse(userData);
+                showAlert('info', `Welcome back, ${user.username}!`);
+                // Don't auto-redirect - let user click login again
+            } catch (e) {
+                sessionStorage.clear();
+            }
+        }
+
+        // Handle login form submission
+        const loginForm = document.getElementById('login-form');
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (!username || !password) {
+                showAlert('error', 'Please enter both username and password');
+                return;
+            }
+
+            // Show loading state
+            const loginBtn = document.getElementById('login-btn');
+            const loginText = document.getElementById('login-text');
+            const loginSpinner = document.getElementById('login-spinner');
+
+            loginBtn.disabled = true;
+            loginText.style.display = 'none';
+            loginSpinner.style.display = 'inline-block';
+
+            try {
+                // Use absolute URL to avoid path issues
+                const response = await fetch('/syos-pos-web/api/user/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password
+                    })
+                });
+
+                // Check if response is JSON
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    const text = await response.text();
+                    throw new Error(`Server returned ${response.status}: ${text.substring(0, 100)}`);
+                }
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    // Store user info in session storage
+                    sessionStorage.setItem('authToken', data.data.sessionId || 'authenticated');
+                    sessionStorage.setItem('user', JSON.stringify(data.data.user));
+
+                    showAlert('success', `Welcome ${data.data.user.username}! Login successful.`);
+
+                    // Reset form
+                    loginForm.reset();
+                    resetLoginButton();
+
+                } else {
+                    showAlert('error', data.message || `Login failed (${response.status}). Please check your credentials.`);
+                    resetLoginButton();
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showAlert('error', `Login error: ${error.message}. Check server logs.`);
+                resetLoginButton();
+            }
+        });
+
+        // Add Enter key support
+        document.getElementById('password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('login-form').dispatchEvent(new Event('submit'));
+            }
+        });
+
+        function resetLoginButton() {
+            const loginBtn = document.getElementById('login-btn');
+            const loginText = document.getElementById('login-text');
+            const loginSpinner = document.getElementById('login-spinner');
+
+            loginBtn.disabled = false;
+            loginText.style.display = 'inline';
+            loginSpinner.style.display = 'none';
+        }
+    });
+
+    async function checkSystemStatus() {
+        try {
+            // Test database connection
+            const dbResponse = await fetch('/syos-pos-web/api/user/status');
+            document.getElementById('db-status').textContent =
+                dbResponse.ok ? '✅ Database: Connected' : '❌ Database: Error';
+
+            // Test API
+            const apiResponse = await fetch('/syos-pos-web/api/user/login', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({username: 'test', password: 'test'})
+            });
+            document.getElementById('api-status').textContent =
+                '✅ API: Responding';
+
+            // Filters status (based on deployment success)
+            document.getElementById('filter-status').textContent =
+                '⚠️ Filters: Check server logs';
+
+        } catch (error) {
+            document.getElementById('db-status').textContent = '❌ Database: Offline';
+            document.getElementById('api-status').textContent = '❌ API: Unreachable';
+        }
+    }
+
+    function showAlert(type, message) {
+        const alertContainer = document.getElementById('alert-container');
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type}`;
+        alertDiv.textContent = message;
+
+        alertContainer.innerHTML = '';
+        alertContainer.appendChild(alertDiv);
+
+        setTimeout(() => {
+            if (alertDiv.parentNode === alertContainer) {
+                alertDiv.remove();
+            }
+        }, 5000);
+    }
+
+    // Quick test credential fill for development
+    function fillCredentials(role) {
+        const credentials = {
+            'admin': { username: 'admin', password: 'admin123' },
+            'manager': { username: 'manager', password: 'manager123' },
+            'cashier': { username: 'cashier', password: 'cashier123' }
+        };
+
+        const creds = credentials[role];
+        if (creds) {
+            document.getElementById('username').value = creds.username;
+            document.getElementById('password').value = creds.password;
+            showAlert('info', `Filled ${role} credentials - Click Login`);
+        }
+    }
+</script>
+</body>
+</html>
