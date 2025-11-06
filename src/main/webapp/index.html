@@ -343,7 +343,7 @@
 
                 if (response.ok && data.success) {
                     // Store user info in session storage
-                    sessionStorage.setItem('authToken', data.data.sessionId || 'authenticated');
+                    sessionStorage.setItem('authToken', data.data.sessionToken || 'authenticated');
                     sessionStorage.setItem('user', JSON.stringify(data.data.user));
 
                     showAlert('success', `Welcome ${data.data.user.username}! Login successful.`);

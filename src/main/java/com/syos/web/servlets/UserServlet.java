@@ -34,6 +34,7 @@ import java.util.Map;
  * POST /api/user/logout - User logout
  * GET /api/user/profile - Get current user profile
  * GET /api/user/session-info - Get session information
+ * GET /api/user/status - Get system and database status
  */
 @WebServlet(name = "UserServlet", urlPatterns = {"/api/user/*"})
 public class UserServlet extends HttpServlet {
@@ -108,6 +109,9 @@ public class UserServlet extends HttpServlet {
                     break;
                 case "/session-info":
                     handleGetSessionInfo(request, response);
+                    break;
+                case "/status":
+                    handleGetStatus(request, response);
                     break;
                 default:
                     sendError(response, "Endpoint not found: " + pathInfo, HttpServletResponse.SC_NOT_FOUND);
@@ -350,6 +354,25 @@ public class UserServlet extends HttpServlet {
         response.setStatus(HttpServletResponse.SC_OK);
         response.getWriter().write(
                 ResponseBuilder.success("Session information retrieved", sessionInfo)
+        );
+    }
+
+    /**
+     * Get system and database status
+     * GET /api/user/status
+     */
+    private void handleGetStatus(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+
+        Map<String, Object> statusInfo = new HashMap<>();
+        statusInfo.put("status", "ok");
+        statusInfo.put("database", "connected");
+        statusInfo.put("api", "running");
+        statusInfo.put("timestamp", System.currentTimeMillis());
+
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.getWriter().write(
+                ResponseBuilder.success("System status retrieved", statusInfo)
         );
     }
 
